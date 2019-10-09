@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en"><!-- head --><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <title>Program Studi :: Website Public</title>
+        <link rel="shortcut icon" href="https://pmb.polindra.ac.id/resource/doc/images/icon/favicon.ico">
+        <!-- themes style -->
+        <link rel="stylesheet" type="text/css" href="ti_files/load-style.css">
+        <!-- other style -->
+        
+        <!-- load javascript -->
+        <script type="text/javascript" src="ti_files/jquery.js"></script>
+<script type="text/javascript" src="ti_files/bootstrap.js"></script>
+<script type="text/javascript" src="ti_files/jquery_002.js"></script>
+<script type="text/javascript" src="ti_files/owl.js"></script>
+<script type="text/javascript" src="ti_files/jquery_007.js"></script>
+<script type="text/javascript" src="ti_files/moment.js"></script>
+<script type="text/javascript" src="ti_files/fullcalendar.js"></script>
+<script type="text/javascript" src="ti_files/jquery_006.js"></script>
+<script type="text/javascript" src="ti_files/jquery-filterable.js"></script>
+<script type="text/javascript" src="ti_files/jquery_008.js"></script>
+<script type="text/javascript" src="ti_files/waypoints-min.js"></script>
+<script type="text/javascript" src="ti_files/jquery_004.js"></script>
+<script type="text/javascript" src="ti_files/jquery_003.js"></script>
+<script type="text/javascript" src="ti_files/jquery_005.js"></script>
+<script type="text/javascript" src="ti_files/custom.js"></script>
+
+        <!-- end of javascript  -->
+    </head>
+    <body>
+        <style type="text/css">
+            .modal_loader {
+                display:    none;
+                position:   fixed;
+                z-index:    1100;
+                top:        0;
+                left:       0;
+                height:     100%;
+                width:      100%;
+                background: rgba( 255, 255, 255, .8 )
+                    url('https://pmb.polindra.ac.id/resource/doc/images/icon/loader.gif')
+                    50% 50%
+                    no-repeat;
+            }
+            body.loading {
+                overflow: hidden;
+            }
+            body.loading .modal_loader {
+                display: block;
+            }
+        </style>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $body = $("body");
+                $(document).on({
+                    ajaxStart: function() {
+                        $body.addClass("loading");
+                    },
+                    ajaxStop: function() {
+                        $body.removeClass("loading");
+                    }
+                });
+                // cek gelombang
+                $('#gelombang').click(function() {
+                    // ajax process
+                    $.ajax({
+                        url: 'https://pmb.polindra.ac.id/index.php/login/welcome/cek_gelombang',
+                        dataType: 'json',
+                        success: function(result) {
+                            if (result.status === 'success') {
+                                // berhasil, redirect sesuai dengan datanya
+                                $("#signin-box").modal('toggle');
+                                $("#reg-gelombang").show();
+                                $("#alert-gelombang").html(result.message)
+                            } else if (result.status === 'notif') {
+                                $("#signin-box").modal('toggle');
+                                $("#reg-notif").show();
+                                $("#alert-notif").html(result.message)
+                            }
+                            $('#daftar-click').prop("disabled", false);
+                        },
+                    });
+                });
+                // trigger form dialog
+                $('#sign-click').click(function() {
+                    $('#reg-box').modal('toggle');
+                });
+                $('#reg-click').click(function() {
+                    $('#signin-box').modal('toggle');
+                });
+                // ajax login
+                $('#form-login').submit(function() {
+                    // set variable
+                    var login_kode = $("#login_kode").val();
+                    var login_password = $("#login_password").val();
+                    // var captcha_2 = $("#captcha_2").val();
+                    // set form data
+                    var formData = new FormData();
+                    formData.append('login_kode', login_kode);
+                    formData.append('login_password', login_password);
+                    // formData.append('captcha_2', captcha_2);
+                    // ajax process
+                    $.ajax({
+                        url: 'https://pmb.polindra.ac.id/index.php/login/welcome/ajax_login',
+                        dataType: 'json',
+                        type: 'POST',
+                        beforeSend: function() {
+                            $('#login-click').prop("disabled", true);
+                        },
+                        success: function(result) {
+                            if (result.status === 'success') {
+                                // berhasil, redirect sesuai dengan datanya
+                                window.location.href = 'https://pmb.polindra.ac.id/index.php/login/welcome/login_pendaftaran/' + result.message + '';
+                            } else {
+                                $("#login-error").show();
+                                $("#login_kode").val('');
+                                $("#login_password").val('');
+                                // $("#captcha_2").val('');
+                                $("#alert-login").html(result.message);
+                            }
+                            $('#login-click').prop("disabled", false);
+                        },
+                        error: function() {
+                            $("#login-error").show();
+                            $('#login-click').prop("disabled", false);
+                            $("#login_kode").val('');
+                            $("#login_password").val('');
+                            // $("#captcha_2").val('');
+                            $("#alert-login").html(result.message);
+                        },
+                        complete: function() {
+                            $('#login-click').prop("disabled", false);
+                            $("#login_kode").val('');
+                            $("#login_password").val('');
+                            // $("#captcha_2").val('');
+                        },
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    }, 'json');
+                    // return false
+                    return false;
+                });
+                // ajax registration
+                $('#form-registration').submit(function() {
+                    // set variable
+                    var nama = $("#reg-nama").val();
+                    var nisn = $("#reg-nisn").val();
+                    var email = $("#reg-email").val();
+                    // var captcha = $("#captcha").val();
+                    // set form data
+                    var formData = new FormData();
+                    formData.append('nama', nama);
+                    formData.append('nisn', nisn);
+                    formData.append('email', email);
+                    // formData.append('captcha', captcha);
+                    // ajax process
+                    $.ajax({
+                        url: 'https://pmb.polindra.ac.id/index.php/login/welcome/ajax_pendaftaran',
+                        dataType: 'json',
+                        type: 'POST',
+                        beforeSend: function() {
+                            $('#daftar-click').prop("disabled", true);
+                        },
+                        success: function(result) {
+                            if (result.status === 'success') {
+                                // berhasil, redirect sesuai dengan datanya
+                                $("#reg-gelombang").show();
+                                $("#reg-nama").val('');
+                                $("#reg-nisn").val('');
+                                $("#reg-email").val('');
+                                // $("#captcha").val('');
+                                $("#reg-notif").hide();
+                                $("#reg-error").hide();
+                                $("#alert-gelombang").html(result.message);
+                            } else if (result.status === 'error') {
+                                $("#reg-error").show();
+                                $("#reg-nama").val('');
+                                $("#reg-nisn").val('');
+                                $("#reg-email").val('');
+                                // $("#captcha").val('');
+                                $("#alert-error").html(result.message);
+                                $("#reg-gelombang").hide();
+                                $("#reg-notif").hide();
+                            } else if (result.status === 'notif') {
+                                $("#reg-notif").show();
+                                $("#reg-nama").val('');
+                                $("#reg-nisn").val('');
+                                $("#email").val('');
+                                // $("#captcha").val('');
+                                $("#reg-notif").html(result.message);
+                                $("#reg-gelombang").hide();
+                            }
+                            $('#daftar-click').prop("disabled", false);
+                        },
+                        error: function() {
+                            $("#reg-error").show();
+                            $('#daftar-click').prop("disabled", false);
+                            $("#reg-nama").val('');
+                            $("#reg-nisn").val('');
+                            $("#reg-email").val('');
+                            // $("#captcha").val('');
+                            $("#alert-error").html('Mohon maaf, proses pendaftaran gagal!');
+                            $("#reg-gelombang").hide();
+                            $("#reg-notif").hide();
+                        },
+                        complete: function() {
+                            $('#daftar-click').prop("disabled", false);
+                            $("#reg-nama").val('');
+                            $("#reg-nisn").val('');
+                            $("#reg-email").val('');
+                            // $("#captcha").val('');
+                        },
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    }, 'json');
+                    // return false
+                    return false;
+                });
+            });
+        </script>
+        <div class="kode_wrapper">
+            <!-- Pendafaran Modal -->
+            <div class="modal fade" id="reg-box" tabindex="-1" role="dialog">
+                <div class="modal-dialog">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <div class="modal-content">
+                        <div class="user-box">
+                            <h2>Pendaftaran Baru</h2>
+                            <!--FORM FIELD START-->
+                            <form action="#" method="post" class="form" id="form-registration">
+                                <div class="alert alert-warning" id="reg-error" style="display: none;">
+                                    <b id="alert-error"></b>
+                                </div>
+                                <div class="alert alert-danger" id="reg-notif" style="display: none;">
+                                    <b id="alert-notif"></b>
+                                </div>
+                                                                <div class="alert alert-success" id="reg-gelombang" style="display: none;">
+                                    <b id="alert-gelombang"></b>
+                                </div>
+                                <div class="input-container">
+                                    <input type="text" placeholder="Nama Calon Mahasiswa" required="required" id="reg-nama">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                                <div class="input-container">
+                                    <input type="text" placeholder="Nomor Induk Siswa Nasional ( NISN )" required="required" id="reg-nisn">
+                                    <i class="fa fa-vcard"></i>
+                                </div>
+                                <div class="input-container">
+                                    <input type="email" placeholder="Alamat Email ( aktif )" required="required" id="reg-email">
+                                    <i class="fa fa-envelope-o"></i>
+                                </div>
+                                <!-- <div class="form-group">
+                                   <div class="row">
+                                       <div class="col-xs-8">
+                                            <div class="capt-img"><img src="https://pmb.polindra.ac.id//resource/doc/captcha/1570548354.2307.jpg" width="250" height="39" style="border:0;" alt=" " /></div>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <a href="https://pmb.polindra.ac.id/index.php/website/home/welcome/cek_captcha" id="data_captcha" class="btn btn-link btn-xs text-indigo reload-capt"><i class="fa fa-refresh"></i> re-load captcha</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-container">
+                                    <input type="text" maxlength="5" id="captcha" placeholder="Captcha" autocomplete="off" tabindex="3"/>
+                                </div> -->
+                                <div class="input-container">
+                                    <label>
+                                        <span>Isikan data diatas dengan lengkap dan benar, Pastikan email yang digunakan aktif karena untuk verifikasi user dan password.</span>
+                                    </label>
+                                </div>
+                                <div class="input-container">
+                                    <button class="btn-style" type="submit" value="save" id="daftar-click">Daftarkan</button>
+                                </div>
+                                                            </form>
+                        </div>
+                        <div class="user-box-footer">
+                            Sudah pernah terdaftar? <a href="#" style="color: #e92063;" id="sign-click" data-toggle="modal" data-target="#signin-box">Masuk disini</a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <!-- Pendaftaran Modal End-->
+
+            <!-- Login Pendaftar -->
+            <div class="modal fade" id="signin-box" tabindex="-1" role="dialog">
+                <div class="modal-dialog">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <div class="modal-content">
+                        <div class="user-box">
+                            <h2>Sign In</h2>
+                            <form action="#" method="post" class="form" id="form-login">
+                                <div class="alert alert-warning" id="login-error" style="display: none;">
+                                    <b id="alert-login"></b>
+                                </div>
+                                <div class="input-container">
+                                    <input type="text" placeholder="Kode Pendaftaran" required="required" id="login_kode">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                                <div class="input-container">
+                                    <input type="password" placeholder="Password" required="required" id="login_password">
+                                    <i class="fa fa-unlock"></i>
+                                </div>
+                                <!-- <div class="form-group">
+                                   <div class="row">
+                                       <div class="col-xs-8">
+                                            <div class="capt-img"><img src="https://pmb.polindra.ac.id//resource/doc/captcha/1570548354.2307.jpg" width="250" height="39" style="border:0;" alt=" " /></div>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <a href="https://pmb.polindra.ac.id/index.php/website/home/welcome/cek_captcha" class="btn btn-link btn-xs text-indigo reload-capt"><i class="fa fa-refresh"></i> re-load captcha</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-container">
+                                    <input type="text" maxlength="5" id="captcha_2" placeholder="Captcha" autocomplete="off" tabindex="3"/>
+                                </div> -->
+                                <div class="input-container">
+                                    <label>
+                                        <span>Gunakan kode pendaftaran dan password yang dikirimkan pada email anda!</span>
+                                    </label>
+                                </div>
+                                <div class="input-container">
+                                    <button class="btn-style" type="submit" value="save" id="login-click">Masuk</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="user-box-footer">
+                            <p>Anda belum terdaftar? <a href="#" style="color: #e92063;" id="reg-click" data-toggle="modal" data-target="#reg-box">Daftar disini</a></p>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <!-- Login Pendaftar End -->
+
+            <!--HEADER START-->
+            <header id="header_2">
+                <!-- Menu atas -->
+                <div class="top_bar_2">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="pull-left">
+                                    <em class="contct_2"><i class="fa fa-phone"></i> Call (0234) 5746464</em>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="lng_wrap">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <i class="fa fa-globe"></i> Indonesia
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            <li><a href="#">Indonesia</a></li>
+                                            <li><a href="#">English</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <ul class="login_wrap">
+                                    <li><a href="#" id="gelombang"><i class="fa fa-edit"></i>Pendaftaran PMB</a></li>
+                                </ul>
+                                <ul class="top_nav"><li><a href="https://pmb.polindra.ac.id/index.php/website/info/kontak">Kontak Kami</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/sitemap">Site Map</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/faq">FAQ</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/download">Download</a></li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Menu atas end -->
+                <!-- Navigation start-->
+                <div class="kode_navigation">
+                    <div id="mobile-header">
+                        <a id="responsive-menu-button" href="#sidr-main"><i class="fa fa-bars"></i></a>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="logo_wrap">
+                                    <a href="#"><img src="ti_files/logo_baru.png" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="nav_2" id="navigation">
+                                    <ul><li><a href="https://pmb.polindra.ac.id/index.php/website/home/welcome">Home</a></li><li><a href="#">Profil</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/about_us" title="-">Tentang Kami</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/visi_misi" title="-">Visi dan Misi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/struktur" title="-">Struktur Organisasi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/lokasi" title="-">Lokasi dan Alamat</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/video" title="-">Video Profil</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/galeri" title="-">Galeri Kami</a></li></ul></li><li><a href="#">Akademik</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi" title="-">Program Studi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kurikulum" title="-">Kurikulum</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/jadwal_kuliah" title="-">Jadwal Perkuliahan</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/jadwal_ujian" title="-">Jadwal Ujian</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kalender" title="-">Kalender Akademik</a></li></ul></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/fasilitas">Fasilitas</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/kampus">Info Kampus</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/utama">Update Terbaru</a></li><li><a href="#">PMB</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/info" title="-">Informasi Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/panduan" title="-">Panduan Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/jalur" title="-">Jalur Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/persyaratan" title="-">Daftar Persyaratan</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/gelombang" title="-">Gelombang Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/hasil_seleksi" title="-">Hasil Seleksi &amp; Penerimaan</a></li></ul></li><li class="visible-xs-block"><a id="simple-menu" href="#sidr"><i class="fa fa-bars"></i></a></li></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Navigation end -->
+            </header>
+            <!--HEADER END-->
+
+            <!--CONTENT START-->
+            <div class="kf_inr_banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="kf_inr_ban_des">
+                    <div class="inr_banner_heading">
+                        <h3>Program Studi</h3>
+                    </div>
+                    <div class="kf_inr_breadcrumb">
+                        <ul>
+                            <li><a href="#">Akademik</a></li>
+                            <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi">Program Studi</a></li>
+                            <li><a href="#">D3 Teknik Informatika</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="kf_content_wrap">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="abt_univ_wrap">
+                        <div class="kf_edu2_heading1">
+                            <h5>
+                                <a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi/profil/D3TIK" class="text-primary">D3 TEKNIK INFORMATIKA</a>
+                            </h5>
+                            <h3>Galeri Gedung</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="gallery-masonery_page gallery inner-content-holder">
+                    <div class="container">
+                        <div class="row">
+                            <div id="filterable-item-holder-1" style="position: relative; height: 609px;" class="masoned">
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 0px; top: 0px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050053.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050053.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 291px; top: 0px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050052.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050052.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 582px; top: 0px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050051.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050051.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 873px; top: 0px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050050.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050050.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 582px; top: 193px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050049.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050049.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 0px; top: 203px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050048.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050048.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 291px; top: 203px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050047.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050047.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 873px; top: 203px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050046.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050046.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 582px; top: 396px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050045.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050045.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 0px; top: 406px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050044.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050044.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 291px; top: 406px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050043.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050043.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                                                <div class="filterable-item all 1 col-md-3 col-sm-4 col-xs-12" style="position: absolute; left: 873px; top: 406px;">
+                                    <div class="edu_masonery_thumb">
+                                        <img src="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050042.JPG" alt="">
+                                        <div class="caption"><a href="#">-</a></div>
+                                        <a href="http://180.214.246.201/polindra/2017/program_galeri/D3TIK/2017050042.JPG" data-rel="prettyPhoto[gallery2]" class="zoom"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi/galeri/D3TIK" class="btn-3"><i class="fa fa-arrow-left"></i> Kembali</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+            <!--END OF CONTENT -->
+
+            <!--FOOTER START-->
+            <footer>
+                <div class="container">
+                    <div class="row">
+                         <div class="col-md-3">
+                             <div class="widget widget-links">
+                                 <h5>PROFIL</h5>
+                                 <ul>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/profil/about_us">Tentang Kami</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/profil/visi_misi">Visi dan Misi</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/profil/struktur">Struktur Organisasi</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/profil/lokasi">Denah dan Lokasi</a></li>
+                                 </ul>
+                             </div>
+                         </div>
+                         <div class="col-md-3">
+                             <div class="widget widget-links">
+                                 <h5>AKADEMIK</h5>
+                                 <ul>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi">Program Studi</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/fasilitas">Fasilitas</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kurikulum">Kurikulum</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kalender">Kalender Akademik</a></li>
+                                 </ul>
+                             </div>
+                         </div>
+                         <div class="col-md-3">
+                             <div class="widget widget-links">
+                                 <h5>INFORMASI</h5>
+                                 <ul>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/info">Penerimaan Mahasiswa Baru</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/info/kampus">Info Kampus</a></li>
+                                     <li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/jadwal_kuliah">Info Perkuliahan</a></li>
+                                     <li><a href="#" onclick="return false;">Info Lowongan Kerja</a></li>
+                                 </ul>
+                             </div>
+                         </div>
+                         <div class="col-md-3">
+                             <div class="widget widget-contact">
+                                 <h5>Contact</h5>
+                                 <ul>
+                                     <li>Jl. Lohbener Lama No.08, Lohbener, Legok, Indramayu, Kabupaten Indramayu, Jawa Barat</li>
+                                     <li>Kode Pos : 45252</li>
+                                     <li>Telepon : (0234) 5746464</li>
+                                     <li>Fax : (0234) 5746464</li>
+                                     <li>Email : info@polindra.ac.id</li>
+                                 </ul>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </footer>
+            <!--FOOTER END-->
+
+            <!--COPYRIGHTS START-->
+            <div class="edu2_copyright_wrap">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="edu2_ft_logo_wrap">
+                                <a href="#" onclick="return false;"><img src="ti_files/ft_logo_baru.png" alt=""></a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="copyright_des">
+                                <span>Copyright © 2010 - 2019. IT Team Politeknik Negeri Indramayu</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="cards_wrap">
+                                <li>
+                                    <a href="https://www.facebook.com/Politeknik.Negeri.Indramayu" target="_blank">
+                                        <i class="fa fa-facebook-square"></i> &nbsp;
+                                        Politeknik Negeri Indramayu
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--COPYRIGHTS END -->
+            <div class="modal_loader"></div>
+        </div>
+    
+
+<div id="sidr" class="sidr left"></div><div id="sidr-main" class="sidr left"><div class="sidr-inner">
+                                    <ul><li><a href="https://pmb.polindra.ac.id/index.php/website/home/welcome">Home</a></li><li><a href="#">Profil</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/about_us" title="-">Tentang Kami</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/visi_misi" title="-">Visi dan Misi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/struktur" title="-">Struktur Organisasi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/lokasi" title="-">Lokasi dan Alamat</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/video" title="-">Video Profil</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/profil/galeri" title="-">Galeri Kami</a></li></ul></li><li><a href="#">Akademik</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/program_studi" title="-">Program Studi</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kurikulum" title="-">Kurikulum</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/jadwal_kuliah" title="-">Jadwal Perkuliahan</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/jadwal_ujian" title="-">Jadwal Ujian</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/kalender" title="-">Kalender Akademik</a></li></ul></li><li><a href="https://pmb.polindra.ac.id/index.php/website/akademik/fasilitas">Fasilitas</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/kampus">Info Kampus</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/info/utama">Update Terbaru</a></li><li><a href="#">PMB</a><ul><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/info" title="-">Informasi Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/panduan" title="-">Panduan Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/jalur" title="-">Jalur Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/persyaratan" title="-">Daftar Persyaratan</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/gelombang" title="-">Gelombang Pendaftaran</a></li><li><a href="https://pmb.polindra.ac.id/index.php/website/pmb/hasil_seleksi" title="-">Hasil Seleksi &amp; Penerimaan</a></li></ul></li><li class="sidr-class-visible-xs-block"><a id="sidr-id-simple-menu" href="#sidr"><i class="sidr-class-fa sidr-class-fa-bars"></i></a></li></ul>
+                                </div></div></body></html>
